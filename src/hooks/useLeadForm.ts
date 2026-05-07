@@ -18,6 +18,7 @@ export const useLeadForm = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const {
     discountAmount,
@@ -100,14 +101,14 @@ export const useLeadForm = () => {
 
     try {
       setLoading(true);
+      setErrors({});
 
       await createLead({
         ...form,
         budgetRange: Number(form.budgetRange),
       });
 
-      alert('Lead submitted successfully');
-
+      setIsSubmitted(true);
       resetForm();
     } catch (err: any) {
       setErrors({
@@ -122,11 +123,13 @@ export const useLeadForm = () => {
     form,
     errors,
     loading,
+    isSubmitted,
     discountAmount,
     finalPrice,
     couponError,
     handleChange,
     handleApplyCoupon,
     handleSubmit,
+    resetStatus: () => setIsSubmitted(false),
   };
-};
+};

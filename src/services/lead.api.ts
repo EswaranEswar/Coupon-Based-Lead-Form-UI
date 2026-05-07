@@ -14,3 +14,11 @@ export const createLead = async (payload: any) => {
 
   return response.json();
 };
+
+export const getLeads = async () => {
+  const response = await fetch('/api/leads');
+  if (!response.ok) {
+    throw new Error('Failed to fetch leads');
+  }
+  return response.json();
+};
