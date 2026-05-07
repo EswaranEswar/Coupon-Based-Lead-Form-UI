@@ -4,7 +4,8 @@ export const validateCouponApi = async (payload: {
   budgetRange: number;
   email: string;
 }) => {
-  const response = await fetch('/api/coupons/validate', {
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const response = await fetch(`${baseUrl}/coupons/validate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
