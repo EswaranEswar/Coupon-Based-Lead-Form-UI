@@ -1,5 +1,4 @@
 import { LeadForm } from './components/LeadForm'
-import './App.css'
 
 function App() {
 

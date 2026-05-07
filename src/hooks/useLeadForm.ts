@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { createLead } from '../services/lead.api';
 import { useCoupon } from '../hooks/useCoupon';
-
-export type RequirementType =
-  | 'Service'
-  | 'Product'
-  | 'Consultation';
+import { leadFormSchema } from '../types/form.schema';
+import { type RequirementType } from '../constants';
 
 export const useLeadForm = () => {
   const [form, setForm] = useState({
@@ -31,7 +28,16 @@ export const useLeadForm = () => {
   } = useCoupon(
     form.requirementType,
     form.budgetRange,
+    form.email,
   );
+
+  const validateField = (name: string, value: any) => {
+    const fieldSchema = leadFormSchema.shape[name as keyof typeof leadFormSchema.shape];
+    if (!fieldSchema) return '';
+
+    const result = fieldSchema.safeParse(value);
+    return result.success ? '' : result.error.issues[0].message;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -45,6 +51,12 @@ export const useLeadForm = () => {
     setForm((prev) => ({
       ...prev,
       [name]: value,
+    }));
+
+    const error = validateField(name, value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
     }));
   };
 
@@ -65,6 +77,7 @@ export const useLeadForm = () => {
     });
 
     clearCoupon();
+    setErrors({});
   };
 
   const handleSubmit = async (
@@ -72,10 +85,26 @@ export const useLeadForm = () => {
   ) => {
     e.preventDefault();
 
+    const result = leadFormSchema.safeParse(form);
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await createLead(form);
+      await createLead({
+        ...form,
+        budgetRange: Number(form.budgetRange),
+      });
 
       alert('Lead submitted successfully');
 

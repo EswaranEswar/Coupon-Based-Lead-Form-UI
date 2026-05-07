@@ -1,7 +1,8 @@
 export const validateCouponApi = async (payload: {
   couponCode: string;
   requirementType: string;
-  budgetRange: string;
+  budgetRange: number;
+  email: string;
 }) => {
   const response = await fetch('/api/coupons/validate', {
     method: 'POST',

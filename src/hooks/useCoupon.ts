@@ -4,6 +4,7 @@ import { validateCouponApi } from '../services/coupon.api';
 export const useCoupon = (
   requirementType: string,
   budgetRange: string,
+  email: string,
 ) => {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
@@ -16,7 +17,8 @@ export const useCoupon = (
       const data = await validateCouponApi({
         couponCode,
         requirementType,
-        budgetRange,
+        budgetRange: Number(budgetRange),
+        email,
       });
 
       setDiscountAmount(data.discountAmount);
